@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Ec2 creation
+
+Parameters:
+  demoSubnetId:
+    Type: String
+    Default: subnet-09f0b721884934d98
+    AllowedValues:
+      - subnet-03a87396e6117d754
+      - subnet-0ae6100c2d9b1ada4
+      - subnet-000e3212d527f02e8
+      - subnet-09f0b721884934d98
+Resources:
+  FirstEc2:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: ami-05fa00d4c63e32376 
+      InstanceType: t2.micro
+      KeyName: trialkey
+      SubnetId: !Ref demoSubnetId
+      Tags: 
+        - Key: Owner
+          Value: afreen.khan@intuitive.cloud
+      IamInstanceProfile: !ImportValue RIPId
+      

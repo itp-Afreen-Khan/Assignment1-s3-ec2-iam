@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: bucket creation and role
+
+Resources:
+  MyfirstS3:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: firstbucketafreen
+      Tags: 
+        - Key: Owner
+          Value: afreen.khan@intuitive.cloud
+      VersioningConfiguration: 
+        Status: Enabled
+      
+  MysecondS3:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: secondbucketafreen
+      Tags: 
+        - Key: Owner
+          Value: afreen.khan@intuitive.cloud
+      VersioningConfiguration: 
+        Status: Enabled
+      
+
+  MyIAMRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: s3iamroleafreen
+      Tags: 
+        - Key: Owner
+          Value: afreen.khan@intuitive.cloud
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: s3-iam-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - s3:*
+                Resource: 
+                  - !GetAtt MyfirstS3.Arn
+                  - !GetAtt MysecondS3.Arn
+                  - !Join [ "" , [ !GetAtt MyfirstS3.Arn, "/*" ] ]
+                  - !Join [ "" , [ !GetAtt MysecondS3.Arn, "/*" ] ]
+  RootInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref MyIAMRole
+Outputs:
+  Myfirstoutput:
+    Value: !Ref RootInstanceProfile
+    Export: 
+      Name: RIPId
